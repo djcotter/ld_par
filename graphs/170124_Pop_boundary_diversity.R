@@ -1,12 +1,13 @@
 library(ggplot2)
 library(ggthemes)
+setws("~/Projects/PAR_variation/")
 
-ALL_females <- read.delim("~/Research/thesis/superpop_100kb_window_data/ALL_females_100kb_no_diversity.txt", header=FALSE)
-AFR_females <- read.delim("~/Research/thesis/superpop_100kb_window_data/AFR_females_100kb_no_diversity.txt", header=FALSE)
-AMR_females <- read.delim("~/Research/thesis/superpop_100kb_window_data/AMR_females_100kb_no_diversity.txt", header=FALSE)
-EUR_females <- read.delim("~/Research/thesis/superpop_100kb_window_data/EUR_females_100kb_no_diversity.txt", header=FALSE)
-EAS_females <- read.delim("~/Research/thesis/superpop_100kb_window_data/EAS_females_100kb_no_diversity.txt", header=FALSE)
-SAS_females <- read.delim("~/Research/thesis/superpop_100kb_window_data/SAS_females_100kb_no_diversity.txt", header=FALSE)
+ALL_females <- read.delim("", header=FALSE)
+AFR_females <- read.delim("", header=FALSE)
+AMR_females <- read.delim("", header=FALSE)
+EUR_females <- read.delim("", header=FALSE)
+EAS_females <- read.delim("", header=FALSE)
+SAS_females <- read.delim("", header=FALSE)
 
 ALL_females <- ALL_females_100kb_no_diversity
 
