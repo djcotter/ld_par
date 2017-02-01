@@ -18,10 +18,14 @@ while IFS=$'\n' read -r line_data; do
     ((++i))
 done < $pops_file
 
+#initialize a file with position labels
+echo "Position" > $MYTMPDIR/position_labels.txt
+awk '{print $2}' ../${pops[0]}_females_100kb_no_diversity.txt >> $MYTMPDIR/position_labels.txt
+
 for i in ${pops[@]}
 do
 	echo $i > $MYTMPDIR/${i}_temp_pi.txt
 	awk '{print (($5~/NA/)?"NA":$4)}' ../${i}_females_100kb_no_diversity.txt >> $MYTMPDIR/${i}_temp_pi.txt
 done
 
-paste $(for i in ${pops[@]}; do echo -n $MYTMPDIR/${i}_temp_pi.txt ""; done) > output_file.txt
+paste $MYTMPDIR/position_labels.txt $(for i in ${pops[@]}; do echo -n $MYTMPDIR/${i}_temp_pi.txt ""; done) > combined_subpops.txt
