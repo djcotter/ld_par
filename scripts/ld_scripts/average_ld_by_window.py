@@ -100,4 +100,3 @@ with open(input_file, 'rU') as f:
 
 			win_num += 1
 			windows = window_coordinates[win_num]
-
