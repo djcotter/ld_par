@@ -27,7 +27,7 @@ with open(windows, 'rU') as f:
 	window_coordinates = list(csv.reader(f, delimiter = '\t'))
 	for window in window_coordinates:
 			window[1] = float(window[1])
-			window[2] = float(window[2])
+			window[2] = float(window[2]) 
 			del window[3]
 
 win_num = 0 
@@ -86,14 +86,14 @@ with open(input_file, 'rU') as f:
 		
 		# if the site in position 2 lies outside the current window, but (BP_B - BP_A) lies within LD_bin, we need to save that information for analyses of future windows
 		if (float(row[5]) > windows[2]) and (abs(float(row[5]) - float(row[1])) < ld_bin):
-			if float(row[5]) in reciprocal_R2:
-				reciprocal_R2[float(row[5])].append([float(row[5])-float(row[1]), float(row[8])])
+			if float(row[5]) in reverse_R2:
+				reverse_R2[float(row[5])].append([float(row[5])-float(row[1]), float(row[8])])
 			else:
-				reciprocal_R2[float(row[5])] = [[float(row[5])-float(row[1]), float(row[8])]]
+				reverse_R2[float(row[5])] = [[float(row[5])-float(row[1]), float(row[8])]]
 
-		# check the reciprocal list to see if there are any saved data for the current focal position, then combine the two lists
-		if fp in reciprocal_R2:
-			R2_values[fp] = R2_values[fp] + reciprocal_R2[fp]
+		# check the reverse list to see if there are any saved data for the current focal position, then combine the two lists
+		if fp in reverse_R2:
+			R2_values[fp] = R2_values[fp] + reverse_R2[fp]
 
 		#if the focal position lies outside of the current window, change the window index and calculate a summary statistic
 		if fp > windows[2]:
