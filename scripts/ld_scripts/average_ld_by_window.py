@@ -6,6 +6,7 @@
 # import required packages
 from sys import argv
 import csv
+import numpy as np
 
 ############################
 ## Set argument variables ##
@@ -19,7 +20,6 @@ import csv
 """
 script, input_file, windows, ld_bin_size = argv
 #script, input_file, windows, ld_bin_size, analysis_type, output_file = argv
-
 
 ######################################################
 ## Read in windows file and set starting conditions ##
@@ -48,16 +48,40 @@ def mean_LD(window_LD_dictionary):
 	"""Calculate mean LD in a window by taking all focal positions and their associated distance and R2 values
 		The structure of the data is {fp: [[distance, R2], [distance, R2] ...]}
 	"""
-	sum_LD = 0
-	num_sites = 0
+	values = []
 	for focal_position in window_LD_dictionary:
 		for pair in window_LD_dictionary[focal_position]:
-			sum_LD += pair[0]
-			num_sites += 1
-	mean_LD = sum_LD/num_sites
+			values.append(pair[0])
+	mean_LD = np.mean(values)
 	return mean_LD
+	
+def median_LD(window_LD_dictionary):
+	"""Calculate median LD in a window by taking all focal positions and their associated distance and R2 values
+		The structure of the data is {fp: [[distance, R2], [distance, R2] ...]}
+	"""
+	values = []
+	for focal_position in window_LD_dictionary:
+		for pair in window_LD_dictionary[focal_position]:
+			values.append(pair[0])
+	median_LD = np.median(values)
+	return median_LD
 
+def LD_percentiles(window_LD_dictionary, lower, upper):
+	"""Calculate percintiles of LD values in a window by taking all focal positions and their associated distance and R2 values
+		The structure of the data is {fp: [[distance, R2], [distance, R2] ...]}
+	"""
+	values = []
+	for focal_position in window_LD_dictionary:
+		for pair in window_LD_dictionary[focal_position]:
+			values.append(pair[0])
+	quartiles = [np.percentile(values, lower), np.percentile(values, upper)]
+	return quartiles
 
+def bootstrap_CI(window_LD_dictionary, replicates):
+	pass
+
+def decay_value(window_LD_dictionary):
+	pass
 
 ############################################################
 ## Open the LD file and perform the analysis line by line ##
@@ -84,9 +108,6 @@ with open(input_file, 'rU') as f:
 			if (fp > windows[2]):
 				results.append([windows[1], windows[2], mean_LD(R2_values)])
 				print windows #temp
-				 
-				first2pairs = {k: R2_values[k] for k in R2_values.keys()[:5]}
-				print first2pairs
 				
 				R2_values = {}
 				win_num += 1
@@ -102,7 +123,7 @@ with open(input_file, 'rU') as f:
 		# if the site in position 2 lies outside the current window, but (BP_B - BP_A) lies within ld_bin, we need to save the information for analyses of future windows
 		if (float(row[5]) > windows[2]) and (abs(float(row[5]) - float(row[1])) < ld_bin):
 			if float(row[5]) in reverse_R2:
-				reverse_R2[float(row[5])].append([float(row[5])-float(row[1]), float(row[8])])
+				reverse_R2[float(row[5])].append([float(row[5])-float(row[1]), float(row[8])])	
 			else:
 				reverse_R2[float(row[5])] = [[float(row[5])-float(row[1]), float(row[8])]]
 
@@ -111,11 +132,9 @@ with open(input_file, 'rU') as f:
 			R2_values[fp] = R2_values[fp] + reverse_R2[fp]
 			del reverse_R2[fp]
 
-
 # once the last line has been reached, R2_values will have all the information correspoding to the last window
 # add the summary of these values to the results file
 results.append([windows[1], windows[2], mean_LD(R2_values)])
 
 for line in results:
 	print line
-
