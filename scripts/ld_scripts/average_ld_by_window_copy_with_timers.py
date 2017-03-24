@@ -41,6 +41,10 @@ ld_bin = float(ld_bin_size) * 1000
 fp = 0 #initalize the focal position as 0
 results = [] # initialize an empty results list
 
+time1 = 0 #temp
+time2 = 0 #temp
+time3 = 0 #temp
+
 ###########################################
 ## Functions for compiling summary stats ##
 ###########################################
@@ -86,57 +90,78 @@ def decay_value(window_LD_dictionary):
 ############################################################
 ## Open the LD file and perform the analysis line by line ##
 ############################################################
-t1 = time.time()
+time_start = time.time()
 with open(input_file, 'rU') as f:
 	for line in f:
 		row = line.split()
-
+		
 		# skip the header line of the file
 		if row[0] == 'CHR_A':
 			continue
 
-		#declare all relevant values as floats
-		row_1 = float(row[1])
-		row_5 = float(row[5])
-		row_8 = float(row[8])
-
 		# initializes the focal position for the first line of the file	
 		if fp == 0: 
-			fp = row_1
+			fp = float(row[1])
 			R2_values[fp] = []
 			LD_bin = [fp - ld_bin, fp + ld_bin]
 
 		# change script paramaters and initialize a new list when reaching a new focal position
-		if row_1 != fp: 
-			fp = row_1
+		t1 = time.time()
+		if float(row[1]) != fp: 
+			fp = float(row[1])
 
 			#if the focal position lies outside of the current window, change the window index, calculate a summary statistic, and clear R2_values from memory
 			if (fp > windows[2]):
 				results.append([windows[1], windows[2], mean_LD(R2_values)])
-				t2 = time.time()
-				print windows[1], windows[2], t2 - t1
-				t1 = time.time()
+
+				print windows
+				print results
+				print "Time1:", time1
+				print "Time2:", time2
+				print "Time3:", time3
+
+				timeNow = time.time()
+				print "Loop Time:", timeNow - time_start
+				time_start = time.time()
+
+				time1 = 0 #temp
+				time2 = 0 #temp
+				time3 = 0 #temp
+
+				if windows[1] == 0:
+					first2pairs = {k: R2_values[k] for k in R2_values.keys()[:2]}
+					print first2pairs
+					
 				R2_values = {}
 				win_num += 1
 				windows = window_coordinates[win_num]
 
 			R2_values[fp] = []
+		t2 = time.time()
 
 		# if the site being compared is within ld_bin of the focal position, store the distance and R2 value in the dictionary as a list
-		if (abs(row_5 - row_1) < ld_bin):
-			R2_values[fp].append([row_5 - row_1, row_8])
+		if (abs(float(row[5]) - float(row[1])) < ld_bin):
+			R2_values[fp].append([float(row[5])-float(row[1]), float(row[8])])
 		
 		# if the site in position 2 lies outside the current window, but (BP_B - BP_A) lies within ld_bin, we need to save the information for analyses of future windows
-		if (row_5 > windows[2]) and (abs(row_5 - row_1) < ld_bin):
-			if row_5 in reverse_R2:
-				reverse_R2[row_5].append([row_5 - row_1, row_8])	
+		t3 = time.time()
+		if (float(row[5]) > windows[2]) and (abs(float(row[5]) - float(row[1])) < ld_bin):
+			if float(row[5]) in reverse_R2:
+				reverse_R2[float(row[5])].append([float(row[5])-float(row[1]), float(row[8])])	
 			else:
-				reverse_R2[row_5] = [[row_5 - row_1, row_8]]
+				reverse_R2[float(row[5])] = [[float(row[5])-float(row[1]), float(row[8])]]
+		t4 = time.time()
 
 		# check the reverse list to see if there are any saved data for the current focal position, then combine the two lists
+		t5 = time.time()
 		if fp in reverse_R2:
 			R2_values[fp] = R2_values[fp] + reverse_R2[fp]
 			del reverse_R2[fp]
+		t6 = time.time()
+
+		time1 = np.maximum(t2 - t1, time1) #temp
+		time2 = np.maximum(t4 - t3, time2) #temp
+		time3 = np.maximum(t6 - t5, time3) #temp
 
 # once the last line has been reached, R2_values will have all the information correspoding to the last window
 # add the summary of these values to the results file
