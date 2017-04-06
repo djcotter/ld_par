@@ -20,7 +20,7 @@ import ld_analysis
 	analysis type: type of summary file to be generated using the desired options
 	output_file: path to an output file
 """
-script, input_LD, windows_input, ld_bin_length = argv
+script, input_LD, windows_input, ld_bin_length, output_file = argv
 ld_bin_length = int(ld_bin_length)
 #script, input_file, windows, ld_bin_size, analysis_type, output_file = argv
 
@@ -40,4 +40,7 @@ with open(windows_input, 'rU') as f:
 ############################################################
 ld_calculations = ld_analysis.LD_loop(input_LD, window_file, ld_bin_length)
 
-print ld_calculations
+with open(output_file, 'w') as OUT:
+	csvwriter = csv.writer(OUT, delimiter='\t')
+	for line in ld_calculations:
+		csvwriter.writerow(line)
