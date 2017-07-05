@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --job-name=diversityArrayJob
-#SBATCH --output=170118_diversityArrayJob_%A_%a.slurm.out
-#SBATCH --error=170118_diversityArrayJob_%A_%a.slurm.err
+#SBATCH --output=170421_diversityArrayJob_%A_%a.slurm.out
+#SBATCH --error=170421_diversityArrayJob_%A_%a.slurm.err
 #SBATCH --array=0-25
 #SBATCH -n 4                       # number of cores
 #SBATCH -t 3-00:00                  # wall time (D-HH:MM)

@@ -5,6 +5,8 @@ import time
 ###########################################
 ## Functions for compiling summary stats ##
 ###########################################
+
+
 def mean_LD(window_LD_dictionary):
 	"""Calculate mean LD in a window by taking all focal positions and their associated distance and R2 values
 		The structure of the data is {fp: [[distance, R2], [distance, R2] ...]}
@@ -15,6 +17,7 @@ def mean_LD(window_LD_dictionary):
 			values.append(pair[1])
 	mean_LD = np.mean(values)
 	return mean_LD
+
 
 def median_LD(window_LD_dictionary):
 	"""Calculate median LD in a window by taking all focal positions and their associated distance and R2 values
@@ -27,6 +30,7 @@ def median_LD(window_LD_dictionary):
 	median_LD = np.median(values)
 	return median_LD
 
+
 def LD_percentiles(window_LD_dictionary, lower, upper):
 	"""Calculate percintiles of LD values in a window by taking all focal positions and their associated distance and R2 values
 		The structure of the data is {fp: [[distance, R2], [distance, R2] ...]}
@@ -38,8 +42,33 @@ def LD_percentiles(window_LD_dictionary, lower, upper):
 	quartiles = [np.percentile(values, lower), np.percentile(values, upper)]
 	return quartiles
 
-def bootstrap_CI(window_LD_dictionary, replicates):
-	pass
+
+def R2_values_to_array(window_LD_dictionary):
+	"""Function to take the R2_Values dictionary for a specific window and return a numpy 
+		array of all R2 values within the window
+	"""
+	values = []
+	for fp in window_LD_dictionary:
+		for pair in window_LD_dictionary[fp]:
+			values.append(pair[1])
+	return np.asarray(values)
+
+
+def rand_samples(data_array):
+	"""
+	Create a randomly dsitributed set of data based on a given array and the length of the given data array
+	"""
+	array_len = len(data_array)
+	indices = np.random.random_integers(0, array_len - 1, array_len)
+	return np.take(data_array, indices)
+
+
+def bootstrap_CI_mean(data_array, replicates):
+	resamples = []
+	for i in range(replicates):
+		resamples.append(np.mean(rand_samples(data_array)))
+	return (np.nanpercentile(resamples, 2.5), np.nanpercentile(resamples, 97.5))
+
 
 def decay_value(window_LD_dictionary):
 	pass
@@ -58,7 +87,6 @@ def LD_loop(input_file, window_coordinates, int ld_bin_size):
 	ld_bin = ld_bin_size * 1000
 	fp = 0 #initalize the focal position as 0
 	results = [] # initialize an empty results list
-	t1 = time.time()
 	with open(input_file, 'rU') as f:
 		for line in f:
 			row = line.split()
@@ -67,10 +95,10 @@ def LD_loop(input_file, window_coordinates, int ld_bin_size):
 			if row[0] == 'CHR_A':
 				continue
 
-			#declare all relevant values as floats
-			a1 = int(row[1])
-			a5 = int(row[5])
-			a8 = float(row[8])
+			#declare all relevant values
+			a1 = int(row[1]) #BP_A
+			a5 = int(row[5]) #BP_B
+			a8 = float(row[8]) #R2
 			row_1 = a1
 			row_5 = a5
 			row_8 = a8
@@ -79,7 +107,6 @@ def LD_loop(input_file, window_coordinates, int ld_bin_size):
 			if fp == 0: 
 				fp = row_1
 				R2_values[fp] = []
-				LD_bin = [fp - ld_bin, fp + ld_bin]
 
 			# change script paramaters and initialize a new list when reaching a new focal position
 			if row_1 != fp: 
@@ -87,10 +114,9 @@ def LD_loop(input_file, window_coordinates, int ld_bin_size):
 
 				#if the focal position lies outside of the current window, change the window index, calculate a summary statistic, and clear R2_values from memory
 				if (fp > windows[2]):
-					results.append([windows[1], windows[2], mean_LD(R2_values)])
-					t2 = time.time()
-					print windows[1], windows[2], t2 - t1
-					t1 = time.time()
+					bootstrap = bootstrap_CI_mean(R2_values_to_array(R2_values), 1000)
+					results.append([windows[1], windows[2], mean_LD(R2_values), bootstrap[0], bootstrap[1]])
+					print windows[1]
 					R2_values = {}
 					win_num += 1
 					windows = window_coordinates[win_num]
@@ -115,5 +141,7 @@ def LD_loop(input_file, window_coordinates, int ld_bin_size):
 
 	# once the last line has been reached, R2_values will have all the information correspoding to the last window
 	# add the summary of these values to the results file
-	results.append([windows[1], windows[2], mean_LD(R2_values)])
+	bootstrap = bootstrap_CI_mean(R2_values_to_array(R2_values), 1000)
+	results.append([windows[1], windows[2], mean_LD(R2_values), bootstrap[0], bootstrap[1]])
 	return results
+
