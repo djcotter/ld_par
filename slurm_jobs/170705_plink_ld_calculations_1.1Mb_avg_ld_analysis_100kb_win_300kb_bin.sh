@@ -11,13 +11,14 @@
 
 date
 
-cd ~/projects/1000_genomes/ld_par_boundary
+cd ~/projects/1000_genomes/ld_par_boundary/
 export PATH=$PATH:~/tools/bcftools/bin/
 export PATH=$PATH:~/tools/plink2/bin/
 
 MYTMPDIR=$(mktemp -p /scratch/dcotter1 -d)
 function clean_up {
 	# Perform program exit housekeeping
+	ls -l $MYTMPDIR
 	rm -rf "$MYTMPDIR"
 }
 trap clean_up EXIT
@@ -46,6 +47,7 @@ vcftools --vcf $MYTMPDIR/${i}_females_biallelic_variants.vcf --mac 1 --recode --
 cp $MYTMPDIR/${i}_females_biallelic_variants_mac_filtered.log log_files/${i}_females_biallelic_variants_mac_filtered.log
 plink --vcf $MYTMPDIR/${i}_females_biallelic_variants_mac_filtered.recode.vcf --out plink_files/${i}_females_biallelic_mac_filtered
 plink --bfile plink_files/${i}_females_biallelic_mac_filtered --ld_window 700000 --ld_window-kb 1100 --memory 16000 --r2 with-freqs --out results/${i}_females_biallelic_mac_filtered_ld_R2
+python ld_scripts/170622_average_ld_by_window/average_ld_by_window/average_ld_by_window.py ${i}_females_biallelic_mac_filtered_ld_R2.ld ~/projects/1000_genomes/window_diversity_analysis/inputs/windowschrX_100kb_windows.bed 300 results/170705_avg_LD_100kb_no_300kb_LDbins/${i}_females_avg_R2_100kb_windows_300kb_ldBins_95bootstrapCI.txt
 
 date 
 
