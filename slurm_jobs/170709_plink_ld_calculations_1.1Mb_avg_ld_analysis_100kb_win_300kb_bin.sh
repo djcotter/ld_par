@@ -50,7 +50,7 @@ cp $MYTMPDIR/${i}_females_biallelic_variants_mac_filtered.log log_files/${i}_fem
 ~/tools/plink2/bin/plink --bfile plink_files/${i}_females_biallelic_mac_filtered --ld-window 700000 --ld-window-kb 1100 --memory 4000 --r2 with-freqs --out $MYTMPDIR/${i}_females_biallelic_mac_filtered_ld_R2
 cp $MYTMPDIR/${i}_females_biallelic_mac_filtered_ld_R2.log log_files/${i}_females_biallelic_mac_filtered_ld_R2.log
 
-python ld_scripts/170622_average_ld_by_window/average_ld_by_window/average_ld_by_window.py $MYTMPDIR/${i}_females_biallelic_mac_filtered_ld_R2.ld ~/projects/1000_genomes/window_diversity_analysis/inputs/windowschrX_100kb_windows.bed 300 results/170709_avg_LD_100kb_no_300kb_LDbins/${i}_females_avg_R2_100kb_windows_300kb_ldBins_95bootstrapCI.txt
+python ld_scripts/170622_average_ld_by_window/average_ld_by_window/average_ld_by_window.py $MYTMPDIR/${i}_females_biallelic_mac_filtered_ld_R2.ld ~/projects/1000_genomes/window_diversity_analysis/inputs/windows/chrX_100kb_windows.bed 300 results/170709_avg_LD_100kb_no_300kb_LDbins/${i}_females_avg_R2_100kb_windows_300kb_ldBins_95bootstrapCI.txt
 
 date
 
