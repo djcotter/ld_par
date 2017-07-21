@@ -1,0 +1,24 @@
+In order to generate the filter files in this directory
+the raw data from UCSC's table browser must be concatanated, sorted, and merged.
+
+This can be done by concatanating all relevant bed files from the raw_UCSC_bed_files directory.
+
+cat a.bed b.bed c.bed > filter_unsorted.bed
+
+Then the file has to be sorted.
+
+sort -k1,1 -k2,2n filter_unmerged.bed
+
+Then it must be cut down to the same number of columns to be interpeted by bedtools.
+
+cat filter_unmerged.bed | awk '{print $1 "\t" $2 "\t" $3 "\t" $4}' > filter_unmerged_4C.bed
+
+Finally, bedtools merge can be run to create the final filter file.
+
+bedtools merge -i filter_unmerged_4C.bed > filter.bed
+
+#############################################################
+
+To create the flanked refseq gene intervals, bedtools flank can be used.
+A genome file must be assigned to use this tool. This is availabe in ~/downloads/bedtools2/genomes/
+The usage is bedtools flank -i INPUT.bed -g my.genome -b [Number of bp to flank] > OUTPUT.bed
