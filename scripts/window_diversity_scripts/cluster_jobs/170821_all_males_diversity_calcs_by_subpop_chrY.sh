@@ -11,7 +11,7 @@
 
 date
 
-cd ~/projects/1000_genomes/outputs/all_individuals_subpop_diversity_by_site/chrX
+cd ~/projects/1000_genomes/outputs/all_individuals_subpop_diversity_by_site/chrY
 source activate exome_diversity
 
 # Print this sub-job's task ID
