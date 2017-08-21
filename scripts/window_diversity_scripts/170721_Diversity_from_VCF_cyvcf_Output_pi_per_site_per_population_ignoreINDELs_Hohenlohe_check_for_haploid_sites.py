@@ -192,7 +192,7 @@ for record in vcf_reader:
 					if len(call.gt_bases) < 4 and len (call.gt_bases) > 1:
 						allele_list.append(call.gt_bases[0])
 						allele_list.append(call.gt_bases[2])
-					elif len(call.gt_bases) = 1:
+					elif len(call.gt_bases) == 1:
 						allele_list.append(call.gt_bases[0])
 			# Process allele list and calculate pi and number of differences
 			#pop[2].append([record.CHROM,record.POS,pi_overall(count_diffs(allele_list), len(allele_list), 1.0)])
