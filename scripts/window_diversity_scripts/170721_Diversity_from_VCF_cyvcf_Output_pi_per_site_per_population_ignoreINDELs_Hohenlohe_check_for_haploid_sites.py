@@ -189,7 +189,7 @@ for record in vcf_reader:
 					#		the T, while skipping the / (or |)
 					#1000 Genomes VCF uses '0' or '1' for haploid calls, this checks
 					#		and only adds the single position to avoid errors
-					if len(call.gt_bases) < 4 and len (call.gt_bases) > 1:
+					if len(call.gt_bases) < 4 and len(call.gt_bases) > 1:
 						allele_list.append(call.gt_bases[0])
 						allele_list.append(call.gt_bases[2])
 					elif len(call.gt_bases) == 1:
