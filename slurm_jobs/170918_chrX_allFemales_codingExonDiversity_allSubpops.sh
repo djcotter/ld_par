@@ -45,10 +45,14 @@ else
 	echo "Converted ${i} data to bed format..."
 fi
 
+# This will filter the converted population bed files by removing sites that overlap the filter.
+~/tools/bedtools/bin/bedtools intersect -a temps/raw_diversity_by_site/${i}_females_pi_per_site.bed -b inputs/callable_sites/20141020.strict_mask.chrX.bed > temps/filtered_diversity_by_site/${i}_females_filtered_pi_per_site.bed
+echo "Filtered ${i} data using filtered_called_sites file..."
+
 # The next section will perform the window anlysis using the provided window file, the filtered_called_sites file, and the filtered pop_diversity files.
 echo "Ready to perform window analysis using: ${window_file}..."
 
-python scripts/window_calculations.py temps/raw_diversity_by_site/${i}_females_filtered_pi_per_site.bed inputs/callable_sites/20141020.strict_mask.chrX.bed $windows outputs/${i}_females_${win}_diversity.txt
+python scripts/window_calculations.py temps/filtered_diversity_by_site/${i}_females_filtered_pi_per_site.bed inputs/callable_sites/20141020.strict_mask.chrX.bed $windows outputs/${i}_females_${win}_diversity.txt
 echo "Performed window calculations on ${i} data..."
 
 echo -e "\n"
