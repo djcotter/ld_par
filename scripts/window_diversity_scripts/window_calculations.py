@@ -17,6 +17,7 @@ data = []
 
 for c in window_coordinates:
 	sum_called = 0
+	count = 0
 	for r in callable:
 		called = 0
 		if int(r[1]) >= int(c[1]) and int(r[2]) <= int(c[2]):
@@ -34,8 +35,9 @@ for c in window_coordinates:
 	for d in diversity:
 		if int(d[2]) > int(c[1]) and int(d[2]) <= int(c[2]):
 			pi_sum += float(d[3])
+			count += 1
 	if sum_called > 0:
-		data.append(['chrX', c[1], c[2], float(pi_sum/sum_called), sum_called])
+		data.append(['chrX', c[1], c[2], float(pi_sum/sum_called), sum_called, count])
 	else:
 		data.append(['chrX', c[1], c[2], pi_sum, "NA"])
 	
